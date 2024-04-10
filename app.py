@@ -74,12 +74,37 @@ app.layout = html.Div([
 ])
 
 def create_gauge(value, ratio):
+    
+    # change color: Distance to Target
     data = final_ratios[final_ratios['report_entity_name'] == value].iloc[ratio]
+    value = data['value']
+    green1 = data['green_start']
+    green2 = data['green_end']
+    red1 = data['red_start']
+    red2 = data['red_end']
+    font_color = 'black'
+    if (value <= green2) & (value >= green1):
+        distance_metric_color = 'lavender'
+        font_color = 'blue'
+        ref = value
+    elif (value < red2) & (value > red1):
+        distance_metric_color = 'crimson'
+        if(abs(value - green1) < abs(value - green2)):
+            ref = green1
+        else:
+            ref = green2
+    else:
+        distance_metric_color = 'gold'
+        if(abs(value - green1) < abs(value - green2)):
+            ref = green1    
+        else:
+            ref = green2
+
     fig = go.Figure(go.Indicator(mode="gauge+number+delta",
-        value=round(data['value'],2),
+        value=round(data['value'],3),
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': data['ratio'], 'font': {'size': 24}},
-        delta={'reference': data['green_start'], 'increasing': {'color': "RebeccaPurple"}},
+        title={'text': data['ratio'], 'font': {'size': 30}},
+        delta={'reference': ref, 'increasing': {'color': distance_metric_color}, 'decreasing': {'color': distance_metric_color}, 'font': {'size': 30}}, # distance metric
         gauge={
             'axis': {'range': [None, max([data['green_end'], data['yellow_end'], data['red_end']])], 'tickwidth': 1, 'tickcolor': "darkblue"},
             'bar': {'color': "black"},
@@ -87,15 +112,15 @@ def create_gauge(value, ratio):
             'borderwidth': 2,
             'bordercolor': "gray",
             'steps': [
-                {'range': [data['red_start'], data['red_end']], 'color': 'crimson'},  # Less than 0.15, red
-                {'range': [data['green_start'], data['green_end']], 'color': 'mediumseagreen'},         # Between 0.15 and 0.2, green
-                {'range': [data['yellow_start'], data['yellow_end']], 'color': 'gold'}], # Above 0.2, green
+                {'range': [data['red_start'], data['red_end']], 'color': 'crimson'},  # red
+                {'range': [data['green_start'], data['green_end']], 'color': 'mediumseagreen'},  # green
+                {'range': [data['yellow_start'], data['yellow_end']], 'color': 'gold'}], # yellow
             'threshold': {
                 'line': {'color': "black", 'width': 4},
                 'thickness': 0.75,
-                'value': round(data['value'],2)}}))
+                'value': round(data['value'],3)}}))
 
-    fig.update_layout(paper_bgcolor="lavender", font={'color': "black", 'family': "Arial"})
+    fig.update_layout(paper_bgcolor="lavender", font={'color': font_color, 'family': "Arial"})
 
     return fig
 

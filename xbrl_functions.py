@@ -105,7 +105,7 @@ def get_captial_asset_bta(df, report_id):
 
     return {
         'report_id': report_id,
-        'ratio': 'Capital Asset Condition (Business Type Activities)', 'value': captial_asset_bta,
+        'ratio': 'Capital Asset Condition (Business-Type Activities)', 'value': captial_asset_bta,
         'green_start': 0.02, 'green_end': 1,
         'yellow_start': 0, 'yellow_end': 0.02,
         'red_start': -1, 'red_end': 0, 
