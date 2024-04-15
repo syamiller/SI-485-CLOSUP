@@ -145,9 +145,9 @@ def get_own_source_rev(df, report_id):
         'value': ratio,
         'green_start': 0,
         'green_end': 0.60,
-        'yellow_start': 0.61,
+        'yellow_start': 0.60,
         'yellow_end': 0.80,
-        'red_start': 0.81,
+        'red_start': 0.80,
         'red_end': 1,
         'var_1_name': 'Total Primary Government Operating Grants and Contributions',
         'var_1_value': total_op_grants,
@@ -201,7 +201,7 @@ def get_captial_asset_bta(df, report_id):
 
     return {
         'report_id': report_id,
-        'ratio': 'Capital Asset Condition (Business Type Activities)', 'value': captial_asset_bta,
+        'ratio': 'Capital Asset Condition (Business-Type Activities)', 'value': captial_asset_bta,
         'green_start': 0.02, 'green_end': 0.5,
         'yellow_start': 0, 'yellow_end': 0.02,
         'red_start': -1, 'red_end': 0, 
