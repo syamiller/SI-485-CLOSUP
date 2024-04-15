@@ -31,45 +31,85 @@ print(final_ratios)
 
 # Define the Dash app
 app = dash.Dash(__name__)
+
 # Define the layout of your dashboard
+formula_size = 30
 app.layout = html.Div([
     html.H1("Government Financial Ratios", style={'textAlign': 'center'}),
     dcc.Dropdown(
-        [value for value in final_ratios['report_entity_name'].unique()],
-        'County of Ogemaw',
+        options=[{'label': value, 'value': value} for value in final_ratios['report_entity_name'].unique()],
+        value='County of Ogemaw',
         id='report-dropdown',
         clearable=False,
         style={'width': '50%', 'margin': 'auto', 'textAlign': 'center'}
     ),
     
+    html.Br(),
+    html.Br(),
+    html.Br(),
+
     html.Div([    
-        html.Div(children=[
-            dcc.Graph(id='gauge-plot1', mathjax=True),
-            dcc.Markdown(id='gauge-plot1-text', mathjax=True),
-            html.Br(),
-            dcc.Graph(id='gauge-plot2', mathjax=True),
-            dcc.Markdown(id='gauge-plot2-text', mathjax=True),
-            html.Br(),
-            dcc.Graph(id='gauge-plot3', mathjax=True),
-            dcc.Markdown(id='gauge-plot3-text', mathjax=True),
-            html.Br(),
-            dcc.Graph(id='gauge-plot4', mathjax=True),
-            dcc.Markdown(id='gauge-plot4-text', mathjax=True),
-        ], style={'padding': 10, 'flex': 1}),
+        html.Div(style={'flex': 0.25}),  # Empty div for spacing on the left
 
         html.Div(children=[
+            html.Div(children=[
+            dcc.Graph(id='gauge-plot1', mathjax=True),
+            dcc.Markdown(id='gauge-plot1-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
+            dcc.Graph(id='gauge-plot2', mathjax=True),
+            dcc.Markdown(id='gauge-plot2-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
+            dcc.Graph(id='gauge-plot3', mathjax=True),
+            dcc.Markdown(id='gauge-plot3-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
+            dcc.Graph(id='gauge-plot4', mathjax=True),
+            dcc.Markdown(id='gauge-plot4-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+        ], style={'padding': 10, 'flex': 0.5, 'textAlign': 'center'}),
+
+        html.Div(style={'flex': 0.25}),  # Narrow column of space between the two divs
+
+        html.Div(children=[
+            html.Div(children=[
             dcc.Graph(id='gauge-plot5', mathjax=True),
-            dcc.Markdown(id='gauge-plot5-text', mathjax=True),
+            dcc.Markdown(id='gauge-plot5-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
             html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
             dcc.Graph(id='gauge-plot6', mathjax=True),
-            dcc.Markdown(id='gauge-plot6-text', mathjax=True),
+            dcc.Markdown(id='gauge-plot6-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
             html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
             dcc.Graph(id='gauge-plot7', mathjax=True),
-            dcc.Markdown(id='gauge-plot7-text', mathjax=True),
+            dcc.Markdown(id='gauge-plot7-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
             html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
             dcc.Graph(id='gauge-plot8', mathjax=True),
-            dcc.Markdown(id='gauge-plot8-text', mathjax=True),
-        ], style={'padding': 10, 'flex': 1})
+            dcc.Markdown(id='gauge-plot8-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+        ], style={'padding': 10, 'flex': 0.5}),
+
+        html.Div(style={'flex': 0.25})  # Empty div for spacing on the right
     ], style={'display': 'flex', 'flexDirection': 'row'})
 ])
 
@@ -85,7 +125,7 @@ def create_gauge(value, ratio):
     font_color = 'black'
     if (value <= green2) & (value >= green1):
         distance_metric_color = 'lavender'
-        font_color = 'blue'
+        font_color = 'darkgreen'
         ref = value
     elif (value < red2) & (value > red1):
         distance_metric_color = 'crimson'
@@ -94,17 +134,18 @@ def create_gauge(value, ratio):
         else:
             ref = green2
     else:
-        distance_metric_color = 'gold'
+        distance_metric_color = 'darkorange'
         if(abs(value - green1) < abs(value - green2)):
             ref = green1    
         else:
             ref = green2
 
+
     fig = go.Figure(go.Indicator(mode="gauge+number+delta",
         value=round(data['value'],3),
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': data['ratio'], 'font': {'size': 30}},
-        delta={'reference': ref, 'increasing': {'color': distance_metric_color}, 'decreasing': {'color': distance_metric_color}, 'font': {'size': 30}}, # distance metric
+        title={'text': data['ratio'], 'font': {'size': 25, 'color': font_color, 'family': 'Courier'}},
+        delta={'reference': ref, 'increasing': {'color': distance_metric_color}, 'decreasing': {'color': distance_metric_color}, 'font': {'size': 30}, 'position': "bottom"}, # distance metric
         gauge={
             'axis': {'range': [None, max([data['green_end'], data['yellow_end'], data['red_end']])], 'tickwidth': 1, 'tickcolor': "darkblue"},
             'bar': {'color': "black"},
@@ -120,7 +161,8 @@ def create_gauge(value, ratio):
                 'thickness': 0.75,
                 'value': round(data['value'],3)}}))
 
-    fig.update_layout(paper_bgcolor="lavender", font={'color': font_color, 'family': "Arial"})
+
+    fig.update_layout(paper_bgcolor="lavender", font={'color': font_color, 'family': 'Courier New', 'size': 18})
 
     return fig
 
