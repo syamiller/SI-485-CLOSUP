@@ -1,4 +1,15 @@
+import ast
+
 def get_short_run(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     balance_unassigned = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'FundBalanceUnassigned') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']
     fund_revenue = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'RevenuesModifiedAccrual') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']    
@@ -10,6 +21,15 @@ def get_short_run(df, report_id):
             'var_2_name':'General Fund Revenue', 'var_2_value': fund_revenue}
     
 def get_days_cash_on_hand(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+    
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     cash_and_cash_equivalents = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CashAndCashEquivalentsModifiedAccrual') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']
     expenditures = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'ExpendituresModifiedAccrual') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']
@@ -21,6 +41,15 @@ def get_days_cash_on_hand(df, report_id):
             'var_2_name':'Expenditures / 365', 'var_2_value':expenditures/365, 'report_entity_name' : report_entity}
     
 def get_liquidity(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+    
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     cash_and_cash_equivalents = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CashAndCashEquivalentsModifiedAccrual') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']
     liabilities = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'LiabilitiesModifiedAccrual') & (df['fund-member'] == 'GeneralFundMember')].iloc[0]['fact.value']
@@ -33,6 +62,15 @@ def get_liquidity(df, report_id):
             'var_2_name':'Liabilities - Deferred Revenue', 'var_2_value': liabilities-deferred_revenue, 'report_entity_name' : report_entity}
     
 def get_gov_debt_coverage(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+    
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     debt_serv_expenditures = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'DebtServicePrincipalRepaymentModifiedAccrual') & (df['fund-member'] == 'GovernmentalFundsMember')].iloc[0]['fact.value'] \
         + df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'DebtServiceInterestAndFiscalChargesModifiedAccrual') & (df['fund-member'] == 'GovernmentalFundsMember')].iloc[0]['fact.value']
@@ -49,6 +87,15 @@ def get_gov_debt_coverage(df, report_id):
         'var_2_name':'Total Expenditures - Capital Outlay - Debt Service Expenditures', 'var_2_value':total_expenditures - capital_outlay - debt_serv_expenditures, 'report_entity_name' : report_entity}
         
 def get_expenditure_per_capita(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+    
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     total_expenditures = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'ExpendituresModifiedAccrual') & (df['fund-member'] == 'GovernmentalFundsMember')].iloc[0]['fact.value']
     if report_id == 677268:
@@ -63,6 +110,15 @@ def get_expenditure_per_capita(df, report_id):
         'var_2_value':population, 'report_entity_name': report_entity}
     
 def get_net_asset_growth(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
+    
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)
+
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
     change_net_position = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'ChangesInNetPosition') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[0]['fact.value']
     begin_net_position = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'NetPositionAtBeginningOfPeriodAfterAdjustments') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[0]['fact.value']
@@ -73,8 +129,56 @@ def get_net_asset_growth(df, report_id):
         'var_2_name':'Governmental Activities Beginning Net Position',
         'var_2_value':begin_net_position, 'report_entity_name': report_entity}
     
-    
+def get_own_source_rev(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
+    df = df[df['report.id'] == int(report_id)]
+    report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
+
+    total_op_grants = df[(df['dimensions.count'] == 2) & (df['cube_id'] == '200000') & (df['cube.primary-local-name'] == 'ProgramRevenues')]
+    total_op_grants['dimension-pair'] = total_op_grants['dimension-pair'].apply(ast.literal_eval)
+
+    total_op_grants['dim1'] = total_op_grants['dimension-pair'].apply(lambda x: x[0])
+    total_op_grants['dim1'] = total_op_grants['dim1'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+    total_op_grants['dim2'] = total_op_grants['dimension-pair'].apply(lambda x: x[1])
+    total_op_grants['dim2'] = total_op_grants['dim2'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+    total_op_grants = total_op_grants[((total_op_grants['dim1'] == 'PrimaryGovernmentActivitiesMember')) & (total_op_grants['dim2'] == 'ProgramRevenuesFromOperatingGrantsAndContributionsMember')]
+    total_op_grants = total_op_grants.iloc[0]['fact.value']
+
+
+    total_rev = df[(df['cube_id'] == '200000') & (df['cube.primary-local-name'] == 'NetExpenseRevenue')]
+    total_rev['dimension-pair'] = total_rev['dimension-pair'].apply(ast.literal_eval)
+    total_rev['dict-pair'] = total_rev['dimension-pair'].apply(lambda x: x[0])
+    total_rev['fund-member'] = total_rev['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    total_rev.drop(columns=['dict-pair'], inplace=True)
+    total_rev = total_rev[total_rev['fund-member'] == 'PrimaryGovernmentActivitiesMember']
+
+    total_rev = total_rev.iloc[0]['fact.value']
+    total_rev
+
+
+    ratio = abs(total_op_grants / total_rev)
+
+    return {
+        'report_id': report_id,
+        'ratio': 'Percentage of Non-Own Source Revenue',
+        'value': ratio,
+        'green_start': 0,
+        'green_end': 0.60,
+        'yellow_start': 0.61,
+        'yellow_end': 0.80,
+        'red_start': 0.81,
+        'red_end': 1,
+        'var_1_name': 'Total Primary Government Operating Grants and Contributions',
+        'var_1_value': total_op_grants,
+        'var_2_name': 'Total Primary Government Revenue',
+        'var_2_value': total_rev,
+        'report_entity_name': report_entity
+    }
+
+
+
 def get_captial_asset_ga(df, report_id):
+    df['cube_id'] = df['cube_id'].astype(str)
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
     beginning_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[0]['fact.value']
@@ -105,7 +209,7 @@ def get_captial_asset_bta(df, report_id):
 
     return {
         'report_id': report_id,
-        'ratio': 'Capital Asset Condition (Business-Type Activities)', 'value': captial_asset_bta,
+        'ratio': 'Capital Asset Condition (Business Type Activities)', 'value': captial_asset_bta,
         'green_start': 0.02, 'green_end': 1,
         'yellow_start': 0, 'yellow_end': 0.02,
         'red_start': -1, 'red_end': 0, 
