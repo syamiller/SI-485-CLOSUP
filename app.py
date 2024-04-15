@@ -36,6 +36,7 @@ app = dash.Dash(__name__)
 # Defines the layout of the dashboard:
 formula_size = 30
 app.layout = html.Div([
+    html.Meta(name="viewport", content="width=device-width, initial-scale=0.75"),
     html.H1("Government Financial Ratios", style={'textAlign': 'center'}),
     dcc.Dropdown(
         options=[{'label': value, 'value': value} for value in final_ratios['report_entity_name'].unique()],
