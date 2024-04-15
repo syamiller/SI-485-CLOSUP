@@ -1,9 +1,6 @@
 import ast
 
 def get_short_run(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -21,9 +18,6 @@ def get_short_run(df, report_id):
             'var_2_name':'General Fund Revenue', 'var_2_value': fund_revenue}
     
 def get_days_cash_on_hand(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-    
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -41,9 +35,6 @@ def get_days_cash_on_hand(df, report_id):
             'var_2_name':'Expenditures / 365', 'var_2_value':expenditures/365, 'report_entity_name' : report_entity}
     
 def get_liquidity(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-    
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -62,9 +53,6 @@ def get_liquidity(df, report_id):
             'var_2_name':'Liabilities - Deferred Revenue', 'var_2_value': liabilities-deferred_revenue, 'report_entity_name' : report_entity}
     
 def get_gov_debt_coverage(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-    
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -82,14 +70,11 @@ def get_gov_debt_coverage(df, report_id):
 
     ratio = debt_serv_expenditures / (total_expenditures - capital_outlay - debt_serv_expenditures)
     return {'report_id': report_id, 'ratio': 'Government Debt Coverage', 'value': ratio, 'green_start': 0, 
-        'green_end': 0.1, 'yellow_start': 0.1, 'yellow_end': 0.15, 'red_start': 0.15, 'red_end': 1,
+        'green_end': 0.1, 'yellow_start': 0.1, 'yellow_end': 0.15, 'red_start': 0.15, 'red_end': 0.5,
         'var_1_name':'Debt Service Expenditures', 'var_1_value':debt_serv_expenditures, 
         'var_2_name':'Total Expenditures - Capital Outlay - Debt Service Expenditures', 'var_2_value':total_expenditures - capital_outlay - debt_serv_expenditures, 'report_entity_name' : report_entity}
         
 def get_expenditure_per_capita(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-    
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -104,15 +89,12 @@ def get_expenditure_per_capita(df, report_id):
         population = 83300
     ratio = total_expenditures / population
     return {'report_id': report_id, 'ratio': 'Expenditure per Capita', 'value': ratio, 'green_start': 500, 
-        'green_end': 1200, 'yellow_start':100 , 'yellow_end': 100, 'red_start': 0, 'red_end': 500,
+        'green_end': 1500, 'yellow_start':100 , 'yellow_end': 100, 'red_start': 0, 'red_end': 500,
         'var_1_name':'Total Expenditures', 'var_1_value':total_expenditures, 
         'var_2_name':'Population',
         'var_2_value':population, 'report_entity_name': report_entity}
     
 def get_net_asset_growth(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
-    df = df[df['cube_id'] != '801150'] # housekeeping for ['fund-member'] column
-    
     df = df[df['dimensions.count'] == 1]
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
@@ -130,11 +112,10 @@ def get_net_asset_growth(df, report_id):
         'var_2_value':begin_net_position, 'report_entity_name': report_entity}
     
 def get_own_source_rev(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
     df = df[df['report.id'] == int(report_id)]
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
-    total_op_grants = df[(df['dimensions.count'] == 2) & (df['cube_id'] == '200000') & (df['cube.primary-local-name'] == 'ProgramRevenues')]
+    total_op_grants = df[(df['dimensions.count'] == 2) & (df['cube.primary-local-name'] == 'ProgramRevenues')]
     total_op_grants['dimension-pair'] = total_op_grants['dimension-pair'].apply(ast.literal_eval)
 
     total_op_grants['dim1'] = total_op_grants['dimension-pair'].apply(lambda x: x[0])
@@ -145,7 +126,7 @@ def get_own_source_rev(df, report_id):
     total_op_grants = total_op_grants.iloc[0]['fact.value']
 
 
-    total_rev = df[(df['cube_id'] == '200000') & (df['cube.primary-local-name'] == 'NetExpenseRevenue')]
+    total_rev = df[(df['cube.primary-local-name'] == 'NetExpenseRevenue')]
     total_rev['dimension-pair'] = total_rev['dimension-pair'].apply(ast.literal_eval)
     total_rev['dict-pair'] = total_rev['dimension-pair'].apply(lambda x: x[0])
     total_rev['fund-member'] = total_rev['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
@@ -178,8 +159,13 @@ def get_own_source_rev(df, report_id):
 
 
 def get_captial_asset_ga(df, report_id):
-    df['cube_id'] = df['cube_id'].astype(str)
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
+
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)    
 
     beginning_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[0]['fact.value']
     end_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
@@ -190,7 +176,7 @@ def get_captial_asset_ga(df, report_id):
     return {
         'report_id': report_id, 
         'ratio': 'Capital Asset Condition (Governmental Activities)', 'value': captial_asset_ga, 
-        'green_start': 0.02, 'green_end': 1, 
+        'green_start': 0.02, 'green_end': 0.5, 
         'yellow_start': 0, 'yellow_end': 0.02,
         'red_start': -1, 'red_end': 0, 
         'var_1_name':'Ending Net Value - Beginning Net Value', 'var_1_value': (end_net_value - beginning_net_value), 
@@ -201,6 +187,12 @@ def get_captial_asset_ga(df, report_id):
 def get_captial_asset_bta(df, report_id):
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
+    df = df[df['dimensions.count'] == 1]
+    df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
+    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
+    df.drop(columns=['dict-pair'], inplace=True)    
+
     beginning_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'BusinessTypeActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[0]['fact.value']
     end_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'BusinessTypeActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
 
@@ -210,7 +202,7 @@ def get_captial_asset_bta(df, report_id):
     return {
         'report_id': report_id,
         'ratio': 'Capital Asset Condition (Business Type Activities)', 'value': captial_asset_bta,
-        'green_start': 0.02, 'green_end': 1,
+        'green_start': 0.02, 'green_end': 0.5,
         'yellow_start': 0, 'yellow_end': 0.02,
         'red_start': -1, 'red_end': 0, 
         'var_1_name':'Ending Net Value - Beginning Net Value', 'var_1_value': (end_net_value - beginning_net_value), 
