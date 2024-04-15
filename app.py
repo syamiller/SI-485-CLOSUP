@@ -5,12 +5,12 @@ import plotly.graph_objects as go
 import pandas as pd
 import xbrl_functions
 
-#load data
-report_ids = [
-    '677268',
-    '677267'
-]
+import warnings
+# Silence all warnings
+warnings.filterwarnings("ignore")
 
+# Load data
+report_ids = [ '677268', '677267' ]
 df = pd.read_csv('xbrl_data.csv')
 df['fact.value'] = pd.to_numeric(df['fact.value'], errors='coerce')
 df = df[df['fact.value'].notna()]
@@ -26,13 +26,14 @@ for report_id in report_ids:
     final_ratios = pd.concat([final_ratios, pd.DataFrame([xbrl_functions.get_net_asset_growth(df, report_id)], columns=final_ratios.columns)], ignore_index=True)
     final_ratios = pd.concat([final_ratios, pd.DataFrame([xbrl_functions.get_captial_asset_ga(df, report_id)], columns=final_ratios.columns)], ignore_index=True)
     final_ratios = pd.concat([final_ratios, pd.DataFrame([xbrl_functions.get_captial_asset_bta(df, report_id)], columns=final_ratios.columns)], ignore_index=True)
-print(final_ratios)
+    final_ratios = pd.concat([final_ratios, pd.DataFrame([xbrl_functions.get_own_source_rev(df, report_id)], columns=final_ratios.columns)], ignore_index=True)
+# print(final_ratios)
 
 
 # Define the Dash app
 app = dash.Dash(__name__)
 
-# Define the layout of your dashboard
+# Defines the layout of the dashboard:
 formula_size = 30
 app.layout = html.Div([
     html.H1("Government Financial Ratios", style={'textAlign': 'center'}),
@@ -42,7 +43,7 @@ app.layout = html.Div([
         id='report-dropdown',
         clearable=False,
         style={'width': '50%', 'margin': 'auto', 'textAlign': 'center'}
-    ),
+    ), # dropdown menu
     
     html.Br(),
     html.Br(),
@@ -77,7 +78,14 @@ app.layout = html.Div([
             dcc.Graph(id='gauge-plot4', mathjax=True),
             dcc.Markdown(id='gauge-plot4-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
             ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
-        ], style={'padding': 10, 'flex': 0.5, 'textAlign': 'center'}),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Div(children=[
+            dcc.Graph(id='gauge-plot9', mathjax=True),
+            dcc.Markdown(id='gauge-plot9-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
+            ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
+        ], style={'padding': 10, 'flex': 0.5, 'textAlign': 'center'}), # 1st column of gauges & formulas
 
         html.Div(style={'flex': 0.25}),  # Narrow column of space between the two divs
 
@@ -107,7 +115,7 @@ app.layout = html.Div([
             dcc.Graph(id='gauge-plot8', mathjax=True),
             dcc.Markdown(id='gauge-plot8-text', mathjax=True, style={'fontSize': formula_size, 'textAlign': 'center'}),
             ], style={'border': '3px solid black', 'padding': '20px', 'background-color': 'lavender'}),
-        ], style={'padding': 10, 'flex': 0.5}),
+        ], style={'padding': 10, 'flex': 1}), # 2nd column of gauges & formulas
 
         html.Div(style={'flex': 0.25})  # Empty div for spacing on the right
     ], style={'display': 'flex', 'flexDirection': 'row'})
@@ -127,7 +135,7 @@ def create_gauge(value, ratio):
         distance_metric_color = 'lavender'
         font_color = 'darkgreen'
         ref = value
-    elif (value < red2) & (value > red1):
+    elif (value <= red2) & (value >= red1):
         distance_metric_color = 'crimson'
         if(abs(value - green1) < abs(value - green2)):
             ref = green1
@@ -144,7 +152,7 @@ def create_gauge(value, ratio):
     fig = go.Figure(go.Indicator(mode="gauge+number+delta",
         value=round(data['value'],3),
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': data['ratio'], 'font': {'size': 25, 'color': font_color, 'family': 'Courier'}},
+        title={'text': data['ratio'], 'font': {'size': 28, 'color': font_color, 'family': 'Courier'}},
         delta={'reference': ref, 'increasing': {'color': distance_metric_color}, 'decreasing': {'color': distance_metric_color}, 'font': {'size': 30}, 'position': "bottom"}, # distance metric
         gauge={
             'axis': {'range': [None, max([data['green_end'], data['yellow_end'], data['red_end']])], 'tickwidth': 1, 'tickcolor': "darkblue"},
@@ -227,6 +235,13 @@ def update_gauge_plot8(value):
     return create_gauge(value, 7)
 
 @app.callback(
+    Output('gauge-plot9', 'figure'),
+    [Input('report-dropdown', 'value')]
+)
+def update_gauge_plot9(value):
+    return create_gauge(value, 8)
+
+@app.callback(
     Output('gauge-plot1-text', 'children'),
     [Input('report-dropdown', 'value')]
 )
@@ -281,6 +296,13 @@ def update_gauge_plot7_text(value):
 )
 def update_gauge_plot8_text(value):
     return update_markdown(value, 7)
+
+@app.callback(
+    Output('gauge-plot9-text', 'children'),
+    [Input('report-dropdown', 'value')]
+)
+def update_gauge_plot9_text(value):
+    return update_markdown(value, 8)
     
 
 # Run the app
