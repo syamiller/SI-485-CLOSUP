@@ -215,8 +215,9 @@ def get_captial_asset_ga(df, report_id):
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
-    beginning_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[0]['fact.value']
-    end_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
+    net_values = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year')
+    beginning_net_value = net_values.iloc[0]['fact.value']
+    end_net_value = net_values.iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
 
     # Calculate ratio
     captial_asset_ga = (end_net_value - beginning_net_value) / beginning_net_value
@@ -239,8 +240,9 @@ def get_captial_asset_bta(df, report_id):
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
-    beginning_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'BusinessTypeActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[0]['fact.value']
-    end_net_value = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'BusinessTypeActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
+    net_values = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'BusinessTypeActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year')
+    beginning_net_value = net_values.iloc[0]['fact.value']
+    end_net_value = net_values.iloc[1]['fact.value']
 
     # Calculate ratio
     captial_asset_bta = (end_net_value - beginning_net_value) / beginning_net_value
