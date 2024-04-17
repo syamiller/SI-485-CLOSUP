@@ -13,11 +13,9 @@ def process_dataframe(df, dim = 1):
         # Create a new column 'fund-member' by extracting the value from the first dictionary in 'dimension-pair' column
         df['fund-member'] = df['dimension-pair'].apply(lambda x: x[0][list(x[0].keys())[0]])
     elif dim == 2:
-        # Extract nested dimension names from dictionaries within list (ex: [{'key':value}, {'key':value}]) in 'dimension-pair' column
-        df['fund-member1'] = df['dimension-pair'].apply(lambda x: x[0])
-        df['fund-member1'] = df['fund-member1'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
-        df['fund-member2'] = df['dimension-pair'].apply(lambda x: x[1])
-        df['fund-member2'] = df['fund-member2'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+        # Extract nested values (fund-member names) from dictionaries within list (ex: [{'key':value}, {'key':value}]) in 'dimension-pair' column
+        df['fund-member1'] = df['dimension-pair'].apply(lambda x: list(x[0].values())[0] if isinstance(x[0], dict) else x[0])
+        df['fund-member2'] = df['dimension-pair'].apply(lambda x: list(x[1].values())[0] if isinstance(x[1], dict) else x[1])
     else:
         # Raise an error if the dimension count is not 1 or 2, as we have only encountered these two cases thus far
         raise ValueError('Invalid dimension count -- Please specify a dimension count of 1 or 2, or add a new preprocessing option.')
