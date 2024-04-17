@@ -235,7 +235,7 @@ def get_captial_asset_ga(df, report_id):
     
 # Capital Asset Condition (Business-Type Activities)
 def get_captial_asset_bta(df, report_id):
-    df = process_dataframe(df) # process DataFrame  
+    df = process_dataframe(df) # process DataFrame
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
