@@ -12,3 +12,7 @@ Instructions for running code to produce the dashboard locally:
 3. Run `app.py`.
    - This will deploy the dashboard locally.
    - The terminal should provide a link to view the dashboard locally. Follow the link (or paste 'http://127.0.0.1:8080/' into your browser) to view the dashboard.
+  
+
+
+Resource for embedding dashboard onto website in the future: https://dash.plotly.com/integrating-dash
