@@ -1,23 +1,27 @@
 import ast
 
-# Function to preprocess the DataFrame from its raw CSV format (only used when dimension count is 1)
-def process_dataframe(df):
-    # Filter dataframe to only include rows where `dimensions.count` is 1
-    df = df[df['dimensions.count'] == 1]
+# Function to preprocess the DataFrame from its raw CSV format (NOTE: filters for dimension count of 1 by default)
+def process_dataframe(df, dim = 1):
+    # Filter dataframe to only include rows where `dimensions.count` is equal to `dim`
+    df = df[df['dimensions.count'] == dim]
     
     # Apply ast.literal_eval to 'dimension-pair' column to convert string representation of dictionary to dictionary
     # This is necessary because CSV files store dictionaries and other nested data structures as strings
     df['dimension-pair'] = df['dimension-pair'].apply(ast.literal_eval)
     
-    # Create a new column 'dict-pair' by extracting the first element from 'dimension-pair' column
-    df['dict-pair'] = df['dimension-pair'].apply(lambda x: x[0])
+    if dim == 1:
+        # Create a new column 'fund-member' by extracting the value from the first dictionary in 'dimension-pair' column
+        df['fund-member'] = df['dimension-pair'].apply(lambda x: x[0][list(x[0].keys())[0]])
+    elif dim == 2:
+        # Extract nested dimension names from dictionaries within list (ex: [{'key':value}, {'key':value}]) in 'dimension-pair' column
+        df['fund-member1'] = df['dimension-pair'].apply(lambda x: x[0])
+        df['fund-member1'] = df['fund-member1'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+        df['fund-member2'] = df['dimension-pair'].apply(lambda x: x[1])
+        df['fund-member2'] = df['fund-member2'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+    else:
+        # Raise an error if the dimension count is not 1 or 2, as we have only encountered these two cases thus far
+        raise ValueError('Invalid dimension count -- Please specify a dimension count of 1 or 2, or add a new preprocessing option.')
     
-    # Create a new column 'fund-member' by extracting the value from the dictionary in 'dict-pair' column
-    df['fund-member'] = df['dict-pair'].apply(lambda x: x[list(x.keys())[0]])
-    
-    # Drop the 'dict-pair' column as it is no longer needed
-    df.drop(columns=['dict-pair'], inplace=True)
-
     return df
 
 
@@ -183,18 +187,11 @@ def get_own_source_rev(df, report_id):
     report_entity = df[df['report.id'] == int(report_id)].iloc[0]['report.entity-name']
 
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
-    total_rev = process_dataframe(df)
+    total_rev = process_dataframe(df) # process DataFrame
     total_rev = total_rev[(total_rev['cube.primary-local-name'] == 'NetExpenseRevenue') & (total_rev['fund-member'] == 'PrimaryGovernmentActivitiesMember')].iloc[0]['fact.value']
 
-    # NOTE: Dimension count is 2 for this value -- preprocessing steps are different
-    total_op_grants = df[df['dimensions.count'] == 2]
-    total_op_grants['dimension-pair'] = total_op_grants['dimension-pair'].apply(ast.literal_eval)
-
-    # Extract nested dimension names from dictionaries within list (ex: [{'key':value}, {'key':value}]) in 'dimension-pair' column
-    total_op_grants['fund-member1'] = total_op_grants['dimension-pair'].apply(lambda x: x[0])
-    total_op_grants['fund-member1'] = total_op_grants['fund-member1'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
-    total_op_grants['fund-member2'] = total_op_grants['dimension-pair'].apply(lambda x: x[1])
-    total_op_grants['fund-member2'] = total_op_grants['fund-member2'].apply(lambda x: list(x.values())[0] if isinstance(x, dict) and x else x)
+    # NOTE: Dimension count is 2 for this value -- preprocessing steps are slightly different
+    total_op_grants = process_dataframe(df, dim=2) # process DataFrame with dimension count of 2
     
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
     total_op_grants = total_op_grants[(df['cube.primary-local-name'] == 'ProgramRevenues') & ((total_op_grants['fund-member1'] == 'PrimaryGovernmentActivitiesMember')) & (total_op_grants['fund-member2'] == 'ProgramRevenuesFromOperatingGrantsAndContributionsMember')]
