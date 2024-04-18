@@ -142,9 +142,9 @@ def get_expenditure_per_capita(df, report_id):
     
     # Assign default population values based on report ID
      # NOTE: Hardcoded population values for Flint & Ogemaw County
-    if report_id == 677268: # Ogemaw County
+    if int(report_id) == 677268: # Ogemaw County
         population = 20726  
-    elif report_id == 677267: # Flint
+    elif int(report_id) == 677267: # Flint
         population = 83300  
     else:
         population = 0  # Default population value
