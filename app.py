@@ -10,8 +10,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Load data
-report_ids = [ '677268', '677267' ]
 df = pd.read_csv('xbrl_data.csv')
+report_ids = df['report.id'].unique().astype(str).tolist()
 
 # Create the `final_ratios` DataFrame
 final_ratios = pd.DataFrame(columns= ['report_id', 'report_entity_name', 'ratio', 'value', 'green_start', 'green_end', 'yellow_start', 'yellow_end', 'red_start', 'red_end', 'var_1_name', 'var_1_value', 'var_2_name', 'var_2_value'])
