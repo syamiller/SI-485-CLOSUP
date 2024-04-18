@@ -140,11 +140,14 @@ def get_expenditure_per_capita(df, report_id):
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
     total_expenditures = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'ExpendituresModifiedAccrual') & (df['fund-member'] == 'GovernmentalFundsMember')].iloc[0]['fact.value']
     
-    # NOTE: Hardcoded population values for Flint & Ogemaw County
-    if report_id == 677268:
-        population = 20726
+    # Assign default population values based on report ID
+     # NOTE: Hardcoded population values for Flint & Ogemaw County
+    if report_id == 677268: # Ogemaw County
+        population = 20726  
+    elif report_id == 677267: # Flint
+        population = 83300  
     else:
-        population = 83300
+        population = 0  # Default population value
     
     # Calculate ratio
     ratio = total_expenditures / population
@@ -190,10 +193,8 @@ def get_own_source_rev(df, report_id):
 
     # NOTE: Dimension count is 2 for this value -- preprocessing steps are slightly different
     total_op_grants = process_dataframe(df, dim=2) # process DataFrame with dimension count of 2
-    
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
-    total_op_grants = total_op_grants[(df['cube.primary-local-name'] == 'ProgramRevenues') & ((total_op_grants['fund-member1'] == 'PrimaryGovernmentActivitiesMember')) & (total_op_grants['fund-member2'] == 'ProgramRevenuesFromOperatingGrantsAndContributionsMember')]
-    total_op_grants = total_op_grants.iloc[0]['fact.value']
+    total_op_grants = total_op_grants[(df['cube.primary-local-name'] == 'ProgramRevenues') & ((total_op_grants['fund-member1'] == 'PrimaryGovernmentActivitiesMember')) & (total_op_grants['fund-member2'] == 'ProgramRevenuesFromOperatingGrantsAndContributionsMember')].iloc[0]['fact.value']
 
     # Calculate ratio
     ratio = abs(total_op_grants / total_rev)
@@ -217,7 +218,7 @@ def get_captial_asset_ga(df, report_id):
     # Extract appropriate `fact.value` by filtering through `cube.primary-local-name` and `fund-member` columns
     net_values = df[(df['report.id'] == int(report_id)) & (df['cube.primary-local-name'] == 'CapitalAssetsNetOfAccumulatedDepreciationAndAmortization') & (df['fund-member'] == 'GovernmentalActivitiesMember')].iloc[:2].sort_values(by='period.fiscal-year')
     beginning_net_value = net_values.iloc[0]['fact.value']
-    end_net_value = net_values.iloc[:2].sort_values(by='period.fiscal-year').iloc[1]['fact.value']
+    end_net_value = net_values.iloc[1]['fact.value']
 
     # Calculate ratio
     captial_asset_ga = (end_net_value - beginning_net_value) / beginning_net_value
